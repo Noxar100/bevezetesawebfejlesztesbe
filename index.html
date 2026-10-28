@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bevezetés a web-fejlesztésbe</title>
+
+<!--css-->
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: Arial, sans-serif; background: #f4f7fb; color: #14213d; line-height: 1.6; }
+
+  /* menüsor */
+  nav { position: sticky; top: 0; z-index: 10; background: #14213d; text-align: center; padding: 14px; }
+  nav a { color: white; text-decoration: none; margin: 0 18px; font-size: 0.95rem; }
+  nav a:hover { color: #f59e0b; }
+
+  /* fejléc */
+  header {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #14213d, #2563eb);
+    color: white; text-align: center; padding: 100px 20px 170px;
+  }
+  header .tartalom { position: relative; z-index: 2; }
+  header .felirat { color: #f59e0b; letter-spacing: 3px; font-size: 0.85rem; font-weight: bold; margin-bottom: 14px; }
+  header h1 { font-size: 3.4rem; line-height: 1.1; margin-bottom: 16px; }
+  header .alcim { color: #dbe4f5; font-size: 1.2rem; max-width: 1000px; margin: 0 auto 30px; }
+
+  /* a fejléc szövegei egymás után úsznak be */
+  header .tartalom > * { opacity: 0; animation: beuszik 0.9s ease forwards; }
+  header .tartalom > *:nth-child(1) { animation-delay: 0.1s; }
+  header .tartalom > *:nth-child(2) { animation-delay: 0.3s; }
+  header .tartalom > *:nth-child(3) { animation-delay: 0.5s; }
+  header .tartalom > *:nth-child(4) { animation-delay: 0.7s; }
+  @keyframes beuszik {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* lebegő körök a háttérben */
+  .kor { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.08); animation: lebeg 9s ease-in-out infinite; }
+  .kor1 { width: 180px; height: 180px; left: 6%;  top: 15%; }
+  .kor2 { width: 110px; height: 110px; left: 82%; top: 20%; animation-delay: -3s; }
+  .kor3 { width: 70px;  height: 70px;  left: 70%; top: 60%; animation-delay: -6s; }
+  .kor4 { width: 130px; height: 130px; left: 18%; top: 58%; animation-delay: -2s; }
+  @keyframes lebeg {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-28px); }
+  }
+
+  /* hullámos alj */
+  .hullam { position: absolute; left: 0; bottom: -1px; width: 100%; height: 110px; z-index: 1; overflow: hidden; }
+  .hullam svg { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%; }
+  .hullam .egy { animation: hullamoz 14s linear infinite; }
+  .hullam .ketto { animation: hullamoz 22s linear infinite reverse; opacity: 0.45; }
+  @keyframes hullamoz {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  section { max-width: 1000px; margin: 70px auto 0; padding: 0 20px; }
+  h2 { text-align: center; margin-bottom: 25px; font-size: 2rem; }
+  .leiras { text-align: center; max-width: 720px; margin: 0 auto 35px; color: #5b6577; }
+
+  .racs { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+
+  /* a dokumentumok mindig egymás mellett, négy oszlopban */
+  #dokumentumok { max-width: 1150px; }
+  #dokumentumok .racs { grid-template-columns: repeat(4, 1fr); }
+
+  /* kártyák */
+  .doboz {
+    background: white; border-radius: 14px; padding: 28px 18px; text-align: center;
+    border: 1px solid #e2e8f0;
+    opacity: 0; transform: translateY(30px);
+    transition: transform 0.25s, box-shadow 0.25s, opacity 0.6s;
+  }
+  .doboz.latszik { opacity: 1; transform: translateY(0); }
+  .doboz:hover, .doboz.latszik:hover { transform: translateY(-10px); box-shadow: 0 12px 25px rgba(37, 99, 235, 0.25); }
+  .doboz h3 { margin-bottom: 8px; }
+  .doboz p { color: #5b6577; font-size: 0.95rem; }
+
+  .jel { display: inline-block; font-weight: bold; color: white; background: #2563eb;
+         border-radius: 50%; width: 55px; height: 55px; line-height: 55px; margin-bottom: 12px; font-size: 1.3rem; }
+
+  /* dokumentumok kártyái */
+  .dok { border-top: 5px solid #2563eb; cursor: pointer; }
+  .dok.urlap { border-top-color: #f59e0b; }
+
+  .gomb { display: inline-block; margin-top: 16px; padding: 9px 20px; background: #2563eb;
+          color: white; text-decoration: none; border-radius: 8px; transition: background 0.2s, transform 0.2s; }
+  .gomb:hover { background: #f59e0b; color: #14213d; transform: scale(1.06); }
+  .gomb:focus { outline: 3px solid #f59e0b; }
+  header .gomb { background: white; color: #14213d; font-weight: bold; padding: 13px 28px; }
+  header .gomb:hover { background: #f59e0b; }
+
+  /* statisztika */
+  .stat { background: #14213d; color: white; border-radius: 14px; padding: 26px; text-align: center; }
+  .stat .szam { font-size: 2.2rem; font-weight: bold; color: #f59e0b; }
+  .stat .szoveg { color: #cbd5e1; font-size: 0.9rem; }
+
+  footer { background: #14213d; color: #cbd5e1; text-align: center; padding: 22px; margin-top: 80px; font-size: 0.9rem; }
+
+  /* keskeny képernyőn (tablet, telefon) két, majd egy oszlop */
+  @media (max-width: 900px) {
+    #dokumentumok .racs { grid-template-columns: repeat(2, 1fr); }
+    header h1 { font-size: 2.4rem; }
+    header { padding-bottom: 140px; }
+  }
+  @media (max-width: 500px) {
+    #dokumentumok .racs { grid-template-columns: 1fr; }
+  }
+
+  /* ha valaki kikapcsolta az animációkat a rendszerben, nem mozog semmi */
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    header .tartalom > *, .doboz { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#home">Home</a>
+  <a href="#csapat">Csapat</a>
+  <a href="#kurzus">A kurzusról</a>
+  <a href="#dokumentumok">Dokumentumok</a>
+</nav>
+
+<header id="home">
+  <span class="kor kor1"></span>
+  <span class="kor kor2"></span>
+  <span class="kor kor3"></span>
+  <span class="kor kor4"></span>
+
+  <div class="tartalom">
+    <p class="felirat">ONLINE KURZUS KEZDŐKNEK</p>
+    <h1>Bevezetés a web-fejlesztésbe</h1>
+    <p class="alcim">HTML, CSS és JavaScript alapok, lépésről lépésre, az első saját weboldalig.</p>
+    <a class="gomb" href="#dokumentumok">Dokumentumok megtekintése</a>
+  </div>
+
+  <div class="hullam">
+    <svg class="ketto" viewBox="0 0 2400 120" preserveAspectRatio="none">
+      <path fill="#f4f7fb" d="M0,70 C200,20 400,20 600,70 C800,120 1000,120 1200,70 C1400,20 1600,20 1800,70 C2000,120 2200,120 2400,70 L2400,120 L0,120 Z"/>
+    </svg>
+    <svg class="egy" viewBox="0 0 2400 120" preserveAspectRatio="none">
+      <path fill="#f4f7fb" d="M0,90 C150,50 450,50 600,90 C750,130 1050,130 1200,90 C1350,50 1650,50 1800,90 C1950,130 2250,130 2400,90 L2400,120 L0,120 Z"/>
+    </svg>
+  </div>
+</header>
+
+<section id="csapat">
+  <h2>Csapatunk</h2>
+  <div class="racs">
+    <div class="doboz">
+      <div class="jel">1</div>
+      <h3>Dobos Gergő</h3>
+      <p>Szerep: dokumentumok és tartalom</p>
+    </div>
+    <div class="doboz">
+      <div class="jel">2</div>
+      <h3>Ringwald Dániel</h3>
+      <p>Szerep: adatok és statisztika</p>
+    </div>
+    <div class="doboz">
+      <div class="jel">3</div>
+      <h3>Zsitva Dániel Béla</h3>
+      <p>Szerep: prezentáció és weblap</p>
+    </div>
+  </div>
+</section>
+
+<section id="kurzus">
+  <h2>A kurzusról</h2>
+  <p class="leiras">
+    Ez az oldal a „Bevezetés a web-fejlesztésbe" online kurzus digitális anyagait mutatja be.
+    A kurzus teljesen kezdőknek szól, előképzettségre nincs szükség. A hat modul során lépésről lépésre
+    ismerkedsz meg a HTML, a CSS és a JavaScript alapjaival, a weboldal szerkezetétől a formázáson és
+    a mobilbarát megjelenésen át az interaktív elemekig. A tananyag videós leckékből, gyakorlati
+    feladatokból és heti élő konzultációkból áll, a saját tempódban haladhatsz. A kurzus végére
+    elkészíted az első saját, működő weboldaladat, amelyet portfólióként is felhasználhatsz.
+  </p>
+  <div class="racs">
+    <div class="stat">
+      <div class="szam">229,4 ezer</div>
+      <div class="szoveg">fő dolgozik az infokommunikációs szektorban (KSH, 2023)</div>
+    </div>
+    <div class="stat">
+      <div class="szam">+25%</div>
+      <div class="szoveg">növekedés 2018-hoz képest</div>
+    </div>
+    <div class="stat">
+      <div class="szam">380 ezer</div>
+      <div class="szoveg">IKT-szakember a 2030-as cél</div>
+    </div>
+  </div>
+</section>
+
+<section id="dokumentumok">
+  <h2>Dokumentumok</h2>
+  <div class="racs">
+    <div class="doboz dok">
+      <h3>Word</h3>
+      <p>A kurzus leírása, célja és tematikája.</p>
+      <a class="gomb" href="#" target="_blank">Megnyitás</a>
+    </div>
+    <div class="doboz dok">
+      <h3>Excel</h3>
+      <p>A kurzushoz gyűjtött statisztikák és adatok.</p>
+      <a class="gomb" href="#" target="_blank">Megnyitás</a>
+    </div>
+    <div class="doboz dok">
+      <h3>PowerPoint</h3>
+      <p>10 diás bemutató a kurzus reklámozására.</p>
+      <a class="gomb" href="https://docs.google.com/presentation/d/1_XjX_EQb-mzgyPfqX73ojmzKF7hQRbwLPwRehOqerdc/edit?usp=drive_link" target="_blank">Megnyitás</a>
+    </div>
+    <div class="doboz dok urlap">
+      <h3>Google Űrlap</h3>
+      <p>Igényfelmérő a leendő hallgatóknak.</p>
+      <a class="gomb" href="https://docs.google.com/forms/d/e/1FAIpQLSfvRrhwp6DiLP4hG3NHTyaKsjMqg6AtZ5DFR3m32XY5uIA3IQ/viewform" target="_blank">Kitöltés</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p id="ev"></p>
+</footer>
+
+
+<!--js-->
+<script>
+  // az évszám automatikusan a láblécbe kerül
+  document.getElementById("ev").textContent = "© " + new Date().getFullYear() + " Bevezetés a web-fejlesztésbe";
+
+  // a dokumentumok dobozára kattintva a benne lévő gomb linkje nyílik meg
+  var dokok = document.querySelectorAll(".dok");
+  dokok.forEach(function (doboz) {
+    doboz.addEventListener("click", function (e) {
+      var link = doboz.querySelector("a");
+      if (link && e.target !== link && link.getAttribute("href") !== "#") {
+        window.open(link.href, "_blank");
+      }
+    });
+  });
+
+  // a dobozok beúsznak, amikor megjelennek a képernyőn
+  var dobozok = document.querySelectorAll(".doboz");
+  var figyelo = new IntersectionObserver(function (elemek) {
+    elemek.forEach(function (elem) {
+      if (elem.isIntersecting) {
+        elem.target.classList.add("latszik");
+      }
+    });
+  });
+  dobozok.forEach(function (d) { figyelo.observe(d); });
+</script>
+
+</body>
+</html>
